@@ -1,0 +1,75 @@
+\chapter{Plan, aceptación y decisiones abiertas}\label{cap:plan}
+
+\section{Fases}
+
+\begin{tabularx}{\linewidth}{@{}clXl@{}}
+\toprule
+Fase & Nombre & Entregable & Estado \\
+\midrule
+1 & Armonización & Serie 2000--2025 validada (India). & Hecho \\
+2 & Requerimientos & Este documento, acordado por el equipo. & En curso \\
+3 & Contrato de datos & Productos de la sección~\ref{sec:contrato} con datos reales. & En curso \\
+4 & Mapa & Mapa con selector de año y mes (RF-01, RF-06, RF-07). & Prototipo \\
+5 & Área y calendario & Selección de área y calendario del área (RF-02, RF-05, RF-10). & Pendiente \\
+6 & Comparación & Frase de respuesta, anomalías y rankings (RF-15 a RF-17). & Pendiente \\
+7 & Descarga & CSV de focos y del calendario (RF-18, RF-19, RF-21). & Pendiente \\
+8 & Pulido & Accesibilidad, móvil, textos de ayuda, prueba del minuto. & Pendiente \\
+\bottomrule
+\end{tabularx}
+
+\section{Criterios de aceptación}
+
+La entrega se considera completa cuando:
+
+\begin{itemize}
+  \item Todos los requerimientos \imp{} están cumplidos.
+  \item La serie armonizada no muestra salto en 2012 (RD-15) y las métricas de
+        validación están documentadas (RD-14).
+  \item Un usuario nuevo responde ``¿este mes es peor de lo normal?'' en menos de un
+        minuto (RNF-04).
+  \item Cualquier consulta de área y periodo responde en menos de 1\,s (RNF-01).
+  \item El CSV descargado coincide con lo que muestran el mapa y el calendario (RF-21).
+  \item La rampa de color pasa la prueba de daltonismo (RNF-08).
+\end{itemize}
+
+\section{Decisiones abiertas}\label{sec:decisiones}
+
+\begin{enumerate}
+  \item \textbf{Región: India o el mundo.} El README fija India para el MVP; se ha
+        propuesto mostrar datos mundiales. El mundo implica:
+        \begin{itemize}
+          \item descargar $\sim$7\,GB comprimidos (MODIS 2000--2025 y VIIRS S-NPP
+                2012--2025, archivo \emph{all countries} de FIRMS);
+          \item recalcular $k$ por región, porque la de India no vale para otros biomas
+                ni para el hemisferio sur (RD-12);
+          \item cambiar el formato de los datos de la aplicación (Parquet o teselas
+                vectoriales en vez de JSON).
+        \end{itemize}
+        Opción intermedia: India para el MVP y el mundo como siguiente paso, con la
+        región ya configurable (RD-03, RF-01).
+  \item \textbf{Región de la demo:} India (datos ya disponibles) o Argentina (región de
+        la CONAE, que propone el reto).
+  \item \textbf{Lo normal:} mediana o promedio; sobre todo 2000--2025 o sobre una
+        ventana móvil (p.\,ej.\ los 10 años anteriores).
+  \item \textbf{Backend o estático:} el plan inicial era sin servidor, pero existe un
+        esqueleto de API. Depende de si la descarga de focos individuales cabe en el
+        navegador.
+  \item \textbf{Celda y formato} de los datos del mapa ($0{,}1^\circ$ o $0{,}25^\circ$;
+        JSON, Parquet o teselas).
+  \item \textbf{Mostrar números absolutos o un índice relativo}, para no dar una falsa
+        sensación de precisión.
+  \item \textbf{Idioma:} solo español, o también inglés para el jurado.
+  \item \textbf{¿Subir los datos exportados al repositorio?} Sin ellos, quien no tenga
+        los CSV ve la aplicación vacía.
+\end{enumerate}
+
+\section{Historial de versiones}
+
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+Versión & Fecha & Cambios \\
+\midrule
+0.1 & 2026-11-14 & Primer borrador: requerimientos de datos, funcionales y no
+                   funcionales; estructura del proyecto; decisiones abiertas. \\
+\bottomrule
+\end{tabularx}

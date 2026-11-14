@@ -158,7 +158,7 @@ de CSV pasaría a una pequeña función en servidor.}
 
 \begin{tabularx}{\linewidth}{@{}clX@{}}
 \toprule
-Fase & Nombre & Entregable en \texttt{documentacion/frontend/} \\
+Fase & Nombre & Entregable en \texttt{Documentacion/frontend/} \\
 \midrule
 0 & Plan & Este documento. \\
 1 & Contrato de datos & Esquema acordado con el equipo de datos y un conjunto de
@@ -172,6 +172,26 @@ Fase & Nombre & Entregable en \texttt{documentacion/frontend/} \\
   textos de ayuda y prueba con usuarios no expertos (la prueba del minuto). \\
 \bottomrule
 \end{tabularx}
+
+\subsection*{Prototipo del mapa (adelantado)}
+
+Se adelantó parte de la fase 4 para tener algo visible pronto: un mapa (MapLibre GL,
+mapa base \emph{Positron} de OpenFreeMap, sin clave) que pinta los focos armonizados
+de India en una rejilla de $0{,}1^\circ$, con selector de año (2000--2025) y de mes.
+Al pasar el ratón sobre una celda se ven los focos armonizados y las detecciones brutas;
+un recuadro da el total del periodo y avisa cuando la fuente es solo Terra.
+
+\begin{itemize}
+  \item Datos: \texttt{analisis/05\_exportar\_mapa.sql} (\texttt{mise run datos:mapa})
+        escribe un JSON por año en \texttt{frontend/public/datos/} (16\,MB en total,
+        $\sim$0,6\,MB por año). Es un adelanto del contrato \texttt{celdas\_mes}, en JSON
+        en vez de Parquet para no depender aún de DuckDB-WASM.
+  \item Rampa YlOrRd en 6 escalones casi logarítmicos (\texttt{<3}, 3, 10, 30, 100, 300+
+        focos por celda), la misma para mes y año completo.
+\end{itemize}
+
+\abierta{¿el mapa pasa a ser la vista principal, con el calendario como panel que se
+actualiza según el área elegida en el mapa?}
 
 \section{Criterios de aceptación}
 

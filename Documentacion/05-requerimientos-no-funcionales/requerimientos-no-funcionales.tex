@@ -1,0 +1,76 @@
+\chapter{Requerimientos no funcionales}\label{cap:nofuncionales}
+
+Cómo de bien tiene que funcionar todo lo anterior.
+
+\section{Rendimiento}
+
+\begin{requerimientos}
+RNF-01 & Cualquier consulta de área y periodo responde en menos de 1\,s. & \imp \\
+RNF-02 & La primera carga de la aplicación transfiere menos de 5\,MB antes de mostrar
+         el mapa. & \rel \\
+RNF-03 & Los datos están precalculados; la aplicación no consulta FIRMS en vivo. & \imp \\
+\end{requerimientos}
+
+\section{Usabilidad}
+
+\begin{requerimientos}
+RNF-04 & Un usuario nuevo responde ``¿este mes es peor de lo normal?'' en menos de un
+         minuto, sin ayuda. & \imp \\
+RNF-05 & Una sola pantalla principal; nada de menús profundos ni pestañas
+         anidadas. & \rel \\
+RNF-06 & Diseño sobrio: fondo neutro, un único color de acento; el color se reserva para
+         codificar datos. & \rel \\
+RNF-07 & Funciona en móvil (pantallas desde 360\,px de ancho): el mapa y el calendario
+         se leen sin desplazamiento horizontal. & \rel \\
+\end{requerimientos}
+
+\section{Accesibilidad}
+
+\begin{requerimientos}
+RNF-08 & Las rampas de color son perceptualmente uniformes y se distinguen con los tres
+         tipos comunes de daltonismo (secuencial tipo YlOrRd o viridis; divergente con el
+         centro en ``normal'' para anomalías). & \imp \\
+RNF-09 & El texto cumple contraste WCAG AA. & \rel \\
+RNF-10 & Los controles se pueden usar con teclado y tienen etiquetas para lectores de
+         pantalla. & \rel \\
+\end{requerimientos}
+
+\section{Idioma}
+
+\begin{requerimientos}
+RNF-11 & La interfaz está en español. & \imp \\
+RNF-12 & La interfaz está también en inglés para el jurado. & \des \\
+\end{requerimientos}
+
+\section{Portabilidad y entorno}
+
+\begin{requerimientos}
+RNF-13 & Las herramientas y tareas del proyecto se gestionan con \texttt{mise}
+         (\texttt{mise run <tarea>}). & \imp \\
+RNF-14 & El entorno de desarrollo arranca con Docker Compose en Docker Desktop
+         (Windows), Docker en Linux y Podman. & \imp \\
+RNF-15 & La aplicación se puede desplegar como sitio estático (GitHub Pages o
+         similar). & \rel \\
+RNF-16 & La aplicación se puede abrir desde otros dispositivos de la red (p.\,ej.\
+         Tailscale) durante el desarrollo, para probarla en móvil. & \des \\
+\end{requerimientos}
+
+\section{Mantenibilidad y reproducibilidad}
+
+\begin{requerimientos}
+RNF-17 & Todo resultado (tablas, cifras de validación, archivos de la aplicación) se
+         regenera desde los datos crudos con tareas de \texttt{mise}. & \imp \\
+RNF-18 & El código pasa el linter (\texttt{mise run front:lint}) y compila sin errores de
+         tipos. & \rel \\
+RNF-19 & La documentación se escribe en español: \texttt{.md} para el análisis y
+         \texttt{.tex} en \texttt{Documentacion/} para planes y requerimientos. & \rel \\
+RNF-20 & Los archivos de texto usan fin de línea LF (\texttt{.gitattributes}). & \rel \\
+\end{requerimientos}
+
+\section{Licencias y atribución}
+
+\begin{requerimientos}
+RNF-21 & Se cita a NASA FIRMS como fuente de los datos y a OpenStreetMap / OpenFreeMap
+         como mapa base. & \imp \\
+RNF-22 & Solo se usan servicios y librerías gratuitos y sin clave de API. & \rel \\
+\end{requerimientos}

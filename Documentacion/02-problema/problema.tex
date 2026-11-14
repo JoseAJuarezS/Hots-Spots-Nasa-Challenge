@@ -1,0 +1,78 @@
+\chapter{El problema}\label{cap:problema}
+
+\section{Datos disponibles}
+
+CSV anuales de FIRMS para India (\texttt{../data de prueba/}, fuera del repo):
+
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+Sensor & Archivo & Años & Nota \\
+\midrule
+MODIS (Terra + Aqua) & \texttt{modis} & 2000--2025 & 2000 solo nov.--dic.; Aqua desde jul.\ 2002. \\
+VIIRS S-NPP & \texttt{viirs-snpp} & 2012--2025 & Escala de referencia. \\
+VIIRS NOAA-20 & \texttt{viirs-jpss1} & 2018--2025 & Desde abril de 2018. \\
+\bottomrule
+\end{tabularx}
+
+Se descargan sin clave desde
+\url{https://firms.modaps.eosdis.nasa.gov/data/country/<sensor>/<año>/<sensor>_<año>_India.csv}.
+El mismo servidor ofrece el archivo de todos los países por año
+(\url{data/country/zips/<sensor>_<año>_all_countries.zip}).
+
+\section{La diferencia entre sensores}
+
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+& MODIS & VIIRS 375\,m \\
+\midrule
+Píxel & $\sim$1\,km & $\sim$375\,m \\
+Sensibilidad & Fuegos grandes o calientes & También fuegos pequeños \\
+\texttt{confidence} & Numérica, 0--100 & Categórica: \texttt{l} / \texttt{n} / \texttt{h} \\
+Brillo & \texttt{brightness}, \texttt{bright\_t31} & \texttt{bright\_ti4}, \texttt{bright\_ti5} \\
+\texttt{satellite} & \texttt{Terra}, \texttt{Aqua} & \texttt{N} (S-NPP), \texttt{N20} (NOAA-20) \\
+\bottomrule
+\end{tabularx}
+
+Focos por año en India:
+
+\begin{tabularx}{\linewidth}{@{}XXXX@{}}
+\toprule
+Año & MODIS & VIIRS S-NPP & S-NPP / MODIS \\
+\midrule
+2012 & 93\,150 & 589\,159 & 6,3$\times$ \\
+2016 & 88\,809 & 681\,943 & 7,7$\times$ \\
+2020 & 76\,021 & 489\,632 & 6,4$\times$ \\
+2024 & 74\,029 & 552\,312 & 7,5$\times$ \\
+\bottomrule
+\end{tabularx}
+
+\textbf{Consecuencia.} Si se usa MODIS hasta 2011 y VIIRS después, el calendario muestra
+en 2012 un aumento de $\times$5--7 que no existe. Además la proporción no es constante:
+cambia con el año, el mes y probablemente la región, así que no basta con un único
+factor.
+
+\section{Otros problemas de los datos}
+
+\begin{itemize}
+  \item \textbf{Años incompletos:} 2000 solo tiene noviembre y diciembre; Aqua entra en
+        julio de 2002. Entre 2000 y 2002 solo hay un satélite MODIS.
+  \item \textbf{Tipo de foco:} \texttt{type} = 0 vegetación, 2 fuente estática,
+        3 costa afuera. Para quemas solo sirve \texttt{type} = 0.
+  \item \textbf{Versión de MODIS:} pasa de 6.2 a 6.03 en 2018; hay que confirmar que no
+        introduce un salto.
+  \item \textbf{Volumen:} India son $\sim$6,6 millones de focos filtrados en 2000--2025.
+        Todo el mundo es del orden de cientos de millones, lo que condiciona cómo se
+        sirven los datos a la aplicación.
+\end{itemize}
+
+\section{Estado de la solución}
+
+La armonización para India ya está hecha y validada (detalle en
+\path{analisis/serie-armonizada.md}):
+
+\begin{itemize}
+  \item Salto en 2012 (media 2012--14 / 2009--11): \textbf{5,36} en el empalme crudo,
+        \textbf{0,96} en la serie armonizada (1,00 sería no tener salto).
+  \item MODIS$\times k$ frente a VIIRS observado, por mes: $r = 0{,}991$ y sesgo 0\,\%
+        en calibración (2012--2018); $r = 0{,}987$ y sesgo +2,7\,\% en prueba (2019--2025).
+\end{itemize}

@@ -1,0 +1,76 @@
+\chapter{Requerimientos funcionales}\label{cap:funcionales}
+
+Qué puede hacer una persona con la aplicación web. Se agrupan por la parte de la
+pantalla a la que pertenecen.
+
+\section{Mapa y selección de área}
+
+\begin{requerimientos}
+RF-01 & La aplicación muestra un mapa de la región de trabajo con los focos armonizados
+        agregados en celdas y coloreados por cantidad. La región es configurable. & \imp \\
+RF-02 & El usuario puede elegir un área dibujando un rectángulo en el mapa. & \imp \\
+RF-03 & El usuario puede elegir un área escribiendo latitud, longitud y radio. & \rel \\
+RF-04 & El usuario puede dibujar un polígono libre. & \des \\
+RF-05 & Existe la opción ``toda la región'' como área por defecto. & \imp \\
+RF-06 & Al pasar el cursor o tocar una celda se ven sus focos armonizados y
+        brutos. & \rel \\
+\end{requerimientos}
+
+\section{Selección de periodo}
+
+\begin{requerimientos}
+RF-07 & El usuario elige un año (2000--2025) y un mes o el año completo; el mapa se
+        actualiza. & \imp \\
+RF-08 & El usuario puede elegir un rango de años o de meses. & \rel \\
+RF-09 & El usuario puede consultar un día concreto. & \des \\
+\end{requerimientos}
+
+\section{Calendario}
+
+\begin{requerimientos}
+RF-10 & Para el área elegida, la aplicación muestra un calendario de años (filas,
+        2000--2025) por meses (columnas), con cada celda coloreada por focos
+        armonizados. Es la vista central. & \imp \\
+RF-11 & El calendario se puede ver en valores absolutos o en anomalía respecto a lo
+        normal. & \rel \\
+RF-12 & Las celdas de 2000--2002 y las de pocos focos se distinguen como de menor
+        precisión, sin ocultarlas. & \imp \\
+RF-13 & Al pasar el cursor o tocar una celda del calendario se ven: focos armonizados,
+        focos brutos, sensor de origen y banda de incertidumbre. & \rel \\
+RF-14 & Elegir una celda del calendario lleva el mapa a ese mes. & \des \\
+\end{requerimientos}
+
+\section{Comparación con lo normal}
+
+\begin{requerimientos}
+RF-15 & Para el periodo elegido se muestra una frase de respuesta, p.\,ej.
+        ``Agosto de 2025: 38\,\% por encima de lo normal --- el 3.\textsuperscript{er}
+        agosto más activo desde 2000''. & \imp \\
+RF-16 & Se muestran lo normal (mediana o promedio histórico), la anomalía en \% y la
+        posición en el ranking. & \imp \\
+RF-17 & Se listan los 5 meses y los 5 años con más actividad del área. & \rel \\
+\end{requerimientos}
+
+\section{Descarga}
+
+\begin{requerimientos}
+RF-18 & El usuario descarga en CSV los focos del área y periodo elegidos, con su
+        peso. & \imp \\
+RF-19 & El usuario descarga el calendario como CSV. & \rel \\
+RF-20 & El usuario descarga el calendario como imagen PNG. & \des \\
+RF-21 & Los totales del CSV coinciden con lo que muestran el mapa y el
+        calendario. & \imp \\
+\end{requerimientos}
+
+\section{Ayuda y contexto}
+
+\begin{requerimientos}
+RF-22 & La aplicación explica en pocas líneas qué es un foco armonizado y por qué hace
+        falta. & \rel \\
+RF-23 & Siempre se indica la fuente de los datos (NASA FIRMS) y el método. & \imp \\
+\end{requerimientos}
+
+\section{Estado actual}
+
+El prototipo del frontend (rama \texttt{frontend-propuesta}) cubre RF-01 (solo India),
+RF-06 y RF-07. El resto está pendiente.

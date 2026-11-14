@@ -52,10 +52,18 @@ run = [
 description = "Serie mensual armonizada 2000-2025 (escala VIIRS S-NPP)"
 run = "duckdb -no-agent analisis/focos.duckdb < analisis/04_armonizar.sql"
 
+[tasks."datos:mapa"]
+description = "Exporta la rejilla 0,1° × mes para el mapa (frontend/public/datos/)"
+run = "duckdb -no-agent -readonly analisis/focos.duckdb < analisis/05_exportar_mapa.sql"
+
 [tasks."docs:pdf"]
-description = "Compila los .tex de documentacion/ a PDF con Tectonic"
-dir = "documentacion"
-run = ["tectonic -X compile avance.tex", "tectonic -X compile frontend/plan.tex"]
+description = "Compila los .tex de Documentacion/ a PDF con Tectonic"
+dir = "Documentacion"
+run = [
+  "tectonic -X compile main.tex",
+  "tectonic -X compile avance.tex",
+  "tectonic -X compile frontend/plan.tex",
+]
 
 [tasks."back:install"]
 description = "Instala las dependencias del backend (uv)"

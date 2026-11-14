@@ -1,0 +1,82 @@
+\chapter{Requerimientos de datos}\label{cap:datos}
+
+Qué tiene que garantizar la parte de datos: de dónde salen los focos, cómo se filtran,
+cómo se armonizan y qué productos entrega a la aplicación.
+
+\section{Fuentes y carga}
+
+\begin{requerimientos}
+RD-01 & Los datos se obtienen de los archivos públicos de NASA FIRMS (MODIS colección 6.1
+        y VIIRS S-NPP 375\,m), sin consultas en vivo desde la aplicación. & \imp \\
+RD-02 & La carga es reproducible con un solo comando (\texttt{mise run datos:cargar})
+        a partir de los CSV descargados. & \imp \\
+RD-03 & La región de trabajo es un parámetro: cambiar de India a otra región o al mundo
+        no requiere reescribir los scripts. & \rel \\
+RD-04 & Los datos crudos y la base de datos local no se suben al repositorio; sí los
+        scripts que los generan y la URL de descarga. & \imp \\
+\end{requerimientos}
+
+\section{Filtrado}
+
+\begin{requerimientos}
+RD-05 & Solo se usan focos de vegetación (\texttt{type} = 0). & \imp \\
+RD-06 & MODIS: \texttt{confidence} $\geq$ 30. VIIRS: \texttt{confidence} en
+        \texttt{n} o \texttt{h}. & \imp \\
+RD-07 & Los mismos filtros se aplican en la calibración, en la armonización y en lo que
+        muestra la aplicación. & \imp \\
+\end{requerimientos}
+
+\section{Armonización}
+
+\begin{requerimientos}
+RD-08 & La escala común es la de VIIRS S-NPP: desde febrero de 2012 cada foco S-NPP
+        pesa 1. & \imp \\
+RD-09 & Entre 2002-08 y 2012-01 cada foco MODIS (Terra + Aqua) pesa $k_\text{modis}$ del
+        mes del año; entre 2000-11 y 2002-07, $k_\text{terra}$ del mes del año. & \imp \\
+RD-10 & Las constantes se calibran con el solape 2012-02 a 2018-12 y se validan con
+        2019--2025, que no se usa para calibrar. & \imp \\
+RD-11 & La armonización se hace por foco (columna \texttt{peso}), no por total, para que
+        cualquier área se pueda sumar sin recalcular. & \imp \\
+RD-12 & Si la región de trabajo es mayor que India, las constantes se calculan por
+        región (bioma o franja de latitud) además de por mes del año. & \rel \\
+RD-13 & Evaluar si incorporar NOAA-20 (2018--) a la escala mejora la serie, o si basta
+        con S-NPP. & \des \\
+\end{requerimientos}
+
+\section{Validación e incertidumbre}
+
+\begin{requerimientos}
+RD-14 & Se documentan correlación, sesgo, error mediano y RMSE de MODIS$\times k$ frente
+        a VIIRS, en calibración y en prueba. & \imp \\
+RD-15 & La serie armonizada no muestra salto en 2012: la razón entre la media de
+        2012--14 y la de 2009--11 está entre 0,9 y 1,1. & \imp \\
+RD-16 & Cada mes armonizado a partir de MODIS lleva una banda de incertidumbre (a partir
+        del rango intercuartil de $k$). & \rel \\
+RD-17 & Los meses de 2000--2002 (solo Terra) quedan marcados como de menor
+        precisión. & \imp \\
+\end{requerimientos}
+
+\section{Productos para la aplicación}\label{sec:contrato}
+
+Es el contrato entre la parte de datos y el frontend. Se acuerda antes de construir
+la pantalla correspondiente.
+
+\begin{requerimientos}
+RD-18 & \textbf{Celdas por mes:} rejilla regular con, por celda y mes, focos
+        armonizados ($\sum$\texttt{peso}), focos brutos y fuente
+        (\texttt{TERRA}/\texttt{MODIS}/\texttt{VIIRS}). & \imp \\
+RD-19 & \textbf{Constantes:} $k$ por mes del año (y región) con su rango
+        intercuartil. & \rel \\
+RD-20 & \textbf{Focos individuales} con su peso, particionados por año, para la descarga
+        en CSV. & \rel \\
+RD-21 & \textbf{Metadatos:} región, periodo cubierto, filtros aplicados y versión del
+        método. & \rel \\
+RD-22 & Todos los productos se generan con tareas de \texttt{mise} desde la base de
+        datos local (p.\,ej. \texttt{mise run datos:mapa}). & \imp \\
+\end{requerimientos}
+
+Estado: hoy existe un adelanto de RD-18 en JSON con celdas de $0{,}1^\circ$
+(\path{analisis/05_exportar_mapa.sql}, 16\,MB para India).
+
+\abierta{tamaño de celda ($0{,}1^\circ$ frente a $0{,}25^\circ$) y formato (JSON,
+Parquet o teselas vectoriales). Para el mundo, $0{,}1^\circ$ en JSON no es viable.}

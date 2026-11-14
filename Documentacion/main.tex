@@ -1,0 +1,65 @@
+% Documento de requerimientos del proyecto.
+% Compilar desde la raíz del repo con:  mise run docs:pdf
+% (o, dentro de Documentacion/:  tectonic -X compile main.tex)
+%
+% Cada capítulo vive en su propia subcarpeta (NN-nombre/nombre.tex), para que
+% cada parte del equipo pueda editar la suya sin pisar las demás. Si un capítulo
+% necesita imágenes, van en su misma subcarpeta.
+
+\documentclass[11pt,a4paper,oneside]{report}
+
+\usepackage[spanish,es-noquoting,es-nodecimaldot]{babel}
+\usepackage{fontspec}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xltabular}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\setlist{nosep, leftmargin=*}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+% Capítulos con título compacto (sin "Capítulo N" en una página aparte)
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter}{0.6em}{}
+\titlespacing*{\chapter}{0pt}{0pt}{1.5em}
+
+% ---- Convenciones -----------------------------------------------------------
+% Prioridad de cada requerimiento (MoSCoW simplificado)
+\newcommand{\imp}{\textcolor{red!70!black}{\textbf{Imprescindible}}}
+\newcommand{\rel}{\textcolor{orange!80!black}{\textbf{Importante}}}
+\newcommand{\des}{\textcolor{gray}{\textbf{Deseable}}}
+% Notas
+\newcommand{\decision}[1]{\textcolor{teal}{\textbf{Decisión:}} #1}
+\newcommand{\abierta}[1]{\textcolor{orange!80!black}{\textbf{Abierta:}} #1}
+
+% Tabla de requerimientos: \begin{requerimientos} ID & texto & prioridad \\ ... \end{requerimientos}
+\newenvironment{requerimientos}
+  {\xltabular{\linewidth}{@{}l X l@{}}
+    \toprule ID & Requerimiento & Prioridad \\ \midrule \endhead
+    \bottomrule \endfoot}
+  {\endxltabular}
+
+\title{Documento de requerimientos\\[0.4em]
+  \Large Calendario armonizado de focos de calor MODIS--VIIRS}
+\author{Equipo Hots-Spots --- NASA Space Apps Challenge 2026}
+\date{14 de noviembre de 2026 \quad·\quad Versión 0.1 (borrador)}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\include{01-introduccion/introduccion}
+\include{02-problema/problema}
+\include{03-requerimientos-datos/requerimientos-datos}
+\include{04-requerimientos-funcionales/requerimientos-funcionales}
+\include{05-requerimientos-no-funcionales/requerimientos-no-funcionales}
+\include{06-arquitectura/arquitectura}
+\include{07-plan/plan}
+
+\end{document}

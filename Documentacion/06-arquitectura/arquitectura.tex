@@ -1,0 +1,107 @@
+\chapter{Arquitectura y estructura del proyecto}\label{cap:arquitectura}
+
+\section{Visión general}
+
+El proyecto tiene dos partes que se comunican por archivos:
+
+\begin{enumerate}
+  \item \textbf{Datos} (\texttt{analisis/}): scripts SQL de DuckDB que cargan los CSV de
+        FIRMS, calculan las constantes, armonizan cada foco y exportan los productos de
+        la sección~\ref{sec:contrato}.
+  \item \textbf{Aplicación} (\texttt{frontend/}): página web que lee esos productos como
+        archivos estáticos y hace todos los cálculos de área y periodo en el navegador.
+\end{enumerate}
+
+Flujo de los datos:
+
+\begin{center}
+\small
+CSV de FIRMS $\xrightarrow{\text{01\_cargar}}$
+\texttt{focos.duckdb} $\xrightarrow{\text{02, 03}}$
+constantes $k$ $\xrightarrow{\text{04\_armonizar}}$
+focos con peso $\xrightarrow{\text{05\_exportar}}$
+\texttt{frontend/public/datos/} $\to$ navegador
+\end{center}
+
+\section{Estructura del repositorio}
+
+\begin{verbatim}
+Hots-Spots-Nasa-Challenge/
+|-- README.md              Reto, problema y criterios de éxito
+|-- mise.toml              Herramientas (versiones) y tareas del proyecto
+|-- compose.yaml           Entorno Docker: frontend + backend
+|-- analisis/              Parte de datos (DuckDB)
+|   |-- 01_cargar.sql          CSV -> tabla focos
+|   |-- 02_correlacion.sql     Correlación MODIS-VIIRS
+|   |-- 03_k_mensual.sql       Constantes por mes
+|   |-- 04_armonizar.sql       Peso por foco y serie mensual
+|   |-- 05_exportar_mapa.sql   Rejilla 0,1° x mes para el mapa
+|   |-- *.md                   Resultados y validación
+|   `-- focos.duckdb           Base local (no se versiona)
+|-- frontend/              Aplicación web
+|   |-- src/
+|   |   |-- App.tsx            Pantalla principal y controles
+|   |   |-- Mapa.tsx           Mapa (MapLibre GL)
+|   |   `-- datos.ts           Carga y agregación de los datos
+|   `-- public/datos/      Productos exportados (JSON)
+|-- backend/               API FastAPI (esqueleto, solo /salud)
+`-- Documentacion/         Este documento y los planes
+    |-- main.tex               Documento de requerimientos
+    |-- NN-capitulo/           Un capítulo por subcarpeta
+    |-- avance.tex             Estado del proyecto
+    `-- frontend/plan.tex      Propuesta inicial del frontend
+\end{verbatim}
+
+Los CSV crudos viven fuera del repo, en \texttt{../data de prueba/}.
+
+\section{Tecnologías}
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Pieza & Elección y motivo \\
+\midrule
+Datos & DuckDB: SQL sobre millones de filas en un portátil, sin servidor. \\
+Frontend & React 19 + TypeScript + Vite + Tailwind 4. \\
+Mapa & MapLibre GL JS con el mapa base \emph{Positron} de OpenFreeMap (claro, sin
+       clave de API). \\
+Consultas en el navegador & Hoy, JSON agregado en JavaScript. Previsto: Parquet +
+       DuckDB-WASM para áreas y periodos arbitrarios. \\
+Gráficos & SVG propio para el calendario (es una cuadrícula). \\
+Backend & FastAPI + DuckDB, solo si hace falta (ver decisiones abiertas). \\
+Entorno & \texttt{mise} (herramientas y tareas), Docker Compose / Podman,
+          \texttt{uv} para Python, \texttt{pnpm} para Node, Tectonic para \LaTeX. \\
+\bottomrule
+\end{tabularx}
+
+\section{Pantalla principal}
+
+Una sola pantalla, de arriba abajo:
+
+\begin{enumerate}
+  \item Barra superior mínima: nombre, región, ayuda.
+  \item Selector de periodo (año y mes).
+  \item Mapa con la herramienta de selección de área.
+  \item Frase de respuesta (anomalía y ranking del periodo).
+  \item Calendario años~$\times$~meses con su leyenda.
+  \item Rankings y descarga, discretos, al final.
+\end{enumerate}
+
+\abierta{si el mapa ocupa la mayor parte de la pantalla con el calendario como panel
+lateral, o si el calendario es el protagonista y el mapa un selector pequeño.}
+
+\section{Tareas de \texttt{mise}}
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Tarea & Qué hace \\
+\midrule
+\texttt{datos:cargar} & Carga los CSV en \texttt{analisis/focos.duckdb}. \\
+\texttt{datos:correlacion} & Correlación y constantes de conversión. \\
+\texttt{datos:armonizar} & Serie armonizada 2000--2025. \\
+\texttt{datos:mapa} & Exporta la rejilla para el mapa. \\
+\texttt{front:dev} / \texttt{front:build} & Servidor de desarrollo / build de producción. \\
+\texttt{back:dev} & API en modo desarrollo. \\
+\texttt{docker:up} / \texttt{docker:down} & Entorno completo en contenedores. \\
+\texttt{docs:pdf} & Compila los \texttt{.tex} de \texttt{Documentacion/}. \\
+\bottomrule
+\end{tabularx}

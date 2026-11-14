@@ -1,0 +1,128 @@
+\chapter{Introducción}\label{cap:introduccion}
+
+\section{Propósito del documento}
+
+Fijar \emph{qué} tiene que hacer el proyecto antes de seguir construyéndolo: los
+requerimientos de los datos, de la aplicación web y de calidad, y la estructura con
+la que se organiza el trabajo. Es la referencia común del equipo: si algo no está
+aquí, se discute y se añade; si cambia, se cambia aquí primero.
+
+Documentos relacionados:
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Documento & Contenido \\
+\midrule
+\texttt{README.md} & Resumen del reto y del problema con nuestros datos. \\
+\texttt{analisis/serie-armonizada.md} & Método de armonización y su validación. \\
+\texttt{Documentacion/avance.tex} & Estado del proyecto a la fecha. \\
+\texttt{Documentacion/frontend/plan.tex} & Propuesta inicial del frontend. \\
+\bottomrule
+\end{tabularx}
+
+\section{Contexto: el reto}
+
+Reto \emph{Harmonization of MODIS and VIIRS Hot Spots} del NASA Space Apps Challenge
+2026, propuesto por la CONAE (Comisión Nacional de Actividades Espaciales, Argentina).
+
+Los focos de calor que publica NASA FIRMS vienen de dos familias de sensores: MODIS
+(desde 2000) y VIIRS (desde 2012). VIIRS detecta muchos más focos que MODIS sobre el
+mismo territorio, así que una serie que empalma los dos muestra un aumento de incendios
+que no existe. El reto pide resolver esa incompatibilidad y ofrecer el resultado de
+forma útil.
+
+\section{Objetivo}
+
+Construir un \textbf{calendario de actividad de quemas} consistente desde el año 2000
+hasta hoy, en el que el número de focos signifique lo mismo sin importar el satélite que
+los detectó, y ofrecerlo en una \textbf{aplicación web} con la que una persona no
+experta pueda responder en menos de un minuto:
+
+\begin{itemize}
+  \item ¿Este mes es peor de lo normal en mi zona?
+  \item ¿Cuál fue el peor año, y en qué meses se concentra la actividad?
+  \item ¿Cuántos focos hubo en esta área y periodo? (y descargarlos)
+\end{itemize}
+
+\section{Usuarios}
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Usuario & Qué necesita \\
+\midrule
+Gestores de emergencias y bomberos & Saber rápido si el periodo actual es anómalo. \\
+Gestores del territorio & Comparar zonas y épocas; planificar temporadas. \\
+Científicos & Series consistentes, incertidumbre explícita y descarga de datos. \\
+Jurado del reto & Entender el problema y la solución en pocos minutos. \\
+\bottomrule
+\end{tabularx}
+
+\section{Alcance}
+
+\textbf{Dentro del MVP:}
+\begin{itemize}
+  \item Armonización MODIS $\to$ VIIRS para 2000--2025 con validación documentada.
+  \item Aplicación web con mapa, selección de área y periodo, calendario
+        años~$\times$~meses, comparación con lo normal, rankings y descarga en CSV.
+  \item Una región de trabajo (India, porque ya tenemos sus datos).
+\end{itemize}
+
+\textbf{Fuera del MVP:}
+\begin{itemize}
+  \item Predicción de incendios.
+  \item Datos casi en tiempo real (NRT). Deseable, pero secundario.
+  \item Cuentas de usuario.
+\end{itemize}
+
+\abierta{\textbf{cobertura mundial.} El README la deja fuera del MVP, pero se ha
+planteado mostrar datos de todo el mundo. Implica descargar el archivo global de FIRMS
+($\sim$7\,GB comprimidos), recalcular la constante de conversión por región (la actual
+solo vale para India) y servir los datos de otra forma (sección~\ref{sec:decisiones}).
+Los requerimientos se escriben de modo que la región sea configurable
+(RF-01), para que esta decisión no obligue a rehacer la aplicación.}
+
+\section{Convenciones}
+
+Cada requerimiento tiene un identificador y una prioridad:
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Prefijo & Tipo \\
+\midrule
+\texttt{RD} & Requerimiento de datos (capítulo~\ref{cap:datos}). \\
+\texttt{RF} & Requerimiento funcional de la aplicación (capítulo~\ref{cap:funcionales}). \\
+\texttt{RNF} & Requerimiento no funcional o de calidad (capítulo~\ref{cap:nofuncionales}). \\
+\bottomrule
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Prioridad & Significado \\
+\midrule
+\imp & Sin esto no hay entrega. \\
+\rel & Debe estar en la entrega; se recorta solo si no hay tiempo. \\
+\des & Mejora si sobra tiempo. \\
+\bottomrule
+\end{tabularx}
+
+\section{Glosario}
+
+\begin{description}[style=nextline]
+  \item[Foco de calor] Píxel en el que un satélite detecta una anomalía térmica.
+        Normalmente un fuego activo, pero también puede ser una industria o un volcán.
+  \item[FIRMS] \emph{Fire Information for Resource Management System}, el servicio de
+        NASA que distribuye los focos de MODIS y VIIRS.
+  \item[MODIS] Sensor de los satélites Terra (desde noviembre de 2000) y Aqua (desde
+        julio de 2002). Píxel de $\sim$1\,km.
+  \item[VIIRS] Sensor de S-NPP (2012), NOAA-20 (2018) y NOAA-21 (2023). Píxel de
+        $\sim$375\,m; detecta fuegos más pequeños.
+  \item[Armonizar] Llevar los focos de los dos sensores a una escala común. Aquí, la de
+        VIIRS S-NPP.
+  \item[Constante $k$] Factor por el que se multiplica cada foco MODIS para expresarlo
+        en focos VIIRS equivalentes. Se calcula por mes del año.
+  \item[Peso] Valor de cada foco en la escala armonizada: $k$ para MODIS, 1 para VIIRS.
+        Los focos armonizados de un área son la suma de los pesos.
+  \item[Lo normal] Valor de referencia de un mes o año para un área (mediana o promedio
+        histórico; decisión abierta).
+  \item[Anomalía] Diferencia entre un periodo y lo normal, en porcentaje.
+\end{description}
