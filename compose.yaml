@@ -1,0 +1,30 @@
+# Entorno de desarrollo con Docker (o Podman).
+#   mise run docker:up    -> levanta frontend (5173) y backend (8000)
+#   mise run docker:down  -> los detiene
+#   (sin mise: docker compose up --build / docker compose down)
+# Funciona con Docker Desktop (Windows y macOS), Docker en Linux y Podman.
+# El sufijo :z de los volúmenes es para SELinux (Fedora); Docker Desktop lo ignora.
+services:
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app:z
+      - /app/node_modules # conserva las dependencias instaladas en la imagen
+    environment:
+      - WATCH_POLLING=true # recarga fiable con volúmenes montados (Windows)
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app:z
+      - ./analisis:/datos:ro,z
+    environment:
+      - WATCHFILES_FORCE_POLLING=true # recarga de FastAPI con volúmenes montados (Windows)
+    command: ["uv", "run", "fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]

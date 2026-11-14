@@ -53,9 +53,9 @@ description = "Serie mensual armonizada 2000-2025 (escala VIIRS S-NPP)"
 run = "duckdb -no-agent analisis/focos.duckdb < analisis/04_armonizar.sql"
 
 [tasks."docs:pdf"]
-description = "Compila los .tex de docs/frontend a PDF con Tectonic"
-dir = "docs/frontend"
-run = "tectonic -X compile plan.tex"
+description = "Compila los .tex de documentacion/ a PDF con Tectonic"
+dir = "documentacion"
+run = ["tectonic -X compile avance.tex", "tectonic -X compile frontend/plan.tex"]
 
 [tasks."back:install"]
 description = "Instala las dependencias del backend (uv)"
@@ -67,3 +67,11 @@ description = "Servidor de desarrollo de la API (FastAPI, recarga automática)"
 dir = "backend"
 depends = ["back:install"]
 run = "uv run fastapi dev app/main.py"
+
+[tasks."docker:up"]
+description = "Levanta frontend y backend en contenedores (compose.yaml)"
+run = "docker compose up --build"
+
+[tasks."docker:down"]
+description = "Detiene y elimina los contenedores del entorno"
+run = "docker compose down"

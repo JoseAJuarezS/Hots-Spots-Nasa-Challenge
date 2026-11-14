@@ -1,0 +1,213 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[spanish,es-noquoting]{babel}
+\usepackage{fontspec}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\setlist{nosep, leftmargin=*}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+\newcommand{\hecho}{\textcolor{teal}{\textbf{Hecho}}}
+\newcommand{\encurso}{\textcolor{orange!80!black}{\textbf{En curso}}}
+\newcommand{\pendiente}{\textcolor{gray}{\textbf{Pendiente}}}
+\newcommand{\abierta}[1]{\textcolor{orange!80!black}{\textbf{Abierta:}} #1}
+
+\title{Avance del proyecto\\[0.3em]
+  \large Armonización de focos de calor MODIS--VIIRS}
+\author{Equipo Hots-Spots --- NASA Space Apps Challenge 2026}
+\date{14 de noviembre de 2026}
+
+\begin{document}
+\maketitle
+
+\section{Para qué es este documento}
+
+Reunir en un solo lugar lo que llevamos hecho, cómo reproducirlo y qué sigue. Los
+detalles de cada parte están en sus propios documentos:
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Documento & Contenido \\
+\midrule
+\texttt{README.md} & El reto, el problema con nuestros datos y los criterios de éxito. \\
+\texttt{analisis/correlacion-modis-viirs.md} & Correlación MODIS--VIIRS y constantes de conversión. \\
+\texttt{analisis/serie-armonizada.md} & Regla de armonización y su validación. \\
+\texttt{documentacion/frontend/plan.tex} & Propuesta de la aplicación web. \\
+\bottomrule
+\end{tabularx}
+
+\section{Estado general}
+
+\begin{tabularx}{\linewidth}{@{}lXl@{}}
+\toprule
+Frente & Qué incluye & Estado \\
+\midrule
+Datos de prueba & CSV de FIRMS para India, 2000--2025, cargados en DuckDB & \hecho \\
+Correlación & Constante por mes del año, validada con 2019--2025 & \hecho \\
+Armonización & Serie 2000--2025 en escala VIIRS S-NPP, sin salto en 2012 & \hecho \\
+Productos para la app & Exportar a Parquet o rejilla$\times$mes, incertidumbre & \encurso{} (equipo de datos) \\
+Backend & Esqueleto FastAPI + DuckDB (solo \texttt{/salud}) & \encurso \\
+Entorno & mise y Docker / Podman & \hecho \\
+Frontend & Plan (fase 0) & \hecho \\
+Frontend & Prototipo con datos simulados a partir de VIIRS & \pendiente \\
+\bottomrule
+\end{tabularx}
+
+\section{Datos}
+
+CSV anuales de FIRMS para \textbf{India}, en \texttt{../data de prueba/} (fuera del repo,
+1{,}1\,GB). Se descargan sin clave desde
+\begin{center}
+\footnotesize\texttt{https://firms.modaps.eosdis.nasa.gov/data/country/<sensor>/<año>/<sensor>\_<año>\_India.csv}
+\end{center}
+con \texttt{<sensor>} $\in$ \{\texttt{modis} (2000--2025), \texttt{viirs-snpp} (2012--2025),
+\texttt{viirs-jpss1} (2018--2025)\}.
+
+Filtros comunes: solo vegetación (\texttt{type = 0}), MODIS con \texttt{confidence $\geq$ 30}
+y VIIRS con \texttt{confidence} \texttt{n} o \texttt{h}.
+
+\section{Armonización}
+
+\subsection*{El problema}
+VIIRS detecta entre 6 y 8 veces más focos que MODIS sobre el mismo territorio. Empalmar
+MODIS hasta 2011 con VIIRS desde 2012 produce un aumento falso de $\times$5{,}4 en la serie.
+
+\subsection*{El método}
+La relación es proporcional pura (regresión log-log con exponente $b = 1{,}002$, $r = 0{,}984$),
+así que basta una constante. Se usa \textbf{una constante por mes del año}, calibrada con
+2012-02 a 2018-12, y se aplica \textbf{por foco} como un \texttt{peso}:
+
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+Periodo & Fuente & Peso de cada foco \\
+\midrule
+2000-11 a 2002-07 & Solo Terra & $k_{\mathrm{terra}}$ del mes del año \\
+2002-08 a 2012-01 & Terra + Aqua & $k_{\mathrm{modis}}$ del mes del año \\
+2012-02 en adelante & VIIRS S-NPP & 1 \\
+\bottomrule
+\end{tabularx}
+
+Al ir por foco, los focos armonizados de cualquier área son $\sum \texttt{peso}$, sin recalcular nada.
+
+\subsection*{Resultados}
+
+\begin{tabularx}{\linewidth}{@{}Xr@{}}
+\toprule
+Indicador & Valor \\
+\midrule
+Razón 2012--14 / 2009--11, empalme crudo & 5{,}36 \\
+Razón 2012--14 / 2009--11, serie armonizada & \textbf{0{,}96} \\
+Validación 2019--2025: correlación mensual & 0{,}987 \\
+Validación 2019--2025: error mediano por mes & 10{,}3\,\% \\
+Validación 2019--2025: sesgo & $+2{,}7$\,\% \\
+Solo Terra frente a MODIS$\times k$ (2003--2011): error mediano & 11{,}8\,\% \\
+\bottomrule
+\end{tabularx}
+
+NOAA-20 y S-NPP son intercambiables ($k = 1{,}014$, $r = 0{,}999$), así que los dos VIIRS no
+necesitan armonizarse entre sí.
+
+\subsection*{Limitaciones}
+\begin{itemize}
+  \item Las constantes valen para India en conjunto; otra región exige recalcularlas.
+  \item 2000--2002 (solo Terra) es menos preciso y la app debe marcarlo.
+  \item En áreas pequeñas y en datos diarios el error relativo es mayor.
+\end{itemize}
+
+\section{Estructura del repositorio}
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Carpeta & Contenido \\
+\midrule
+\texttt{analisis/} & Scripts SQL de DuckDB (\texttt{01}--\texttt{04}) y sus informes. La base
+  \texttt{focos.duckdb} se genera localmente y no se sube. \\
+\texttt{backend/} & API en FastAPI con DuckDB, gestionada con uv. \\
+\texttt{frontend/} & React 19 + TypeScript + Vite + Tailwind 4. \\
+\texttt{documentacion/} & Este documento y el plan del frontend (\texttt{frontend/}). \\
+\texttt{compose.yaml} & Entorno de desarrollo en contenedores. \\
+\texttt{mise.toml} & Versiones de herramientas y tareas. \\
+\bottomrule
+\end{tabularx}
+
+\section{Entorno de trabajo}
+
+\subsection*{Con mise (local)}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Tarea & Qué hace \\
+\midrule
+\texttt{mise install} & Instala Node, pnpm, Python, uv, DuckDB y Tectonic. \\
+\texttt{mise run datos:cargar} & CSV $\to$ \texttt{analisis/focos.duckdb}. \\
+\texttt{mise run datos:correlacion} & Correlación y constantes por mes. \\
+\texttt{mise run datos:armonizar} & Serie armonizada 2000--2025. \\
+\texttt{mise run front:dev} & Servidor de Vite en \texttt{localhost:5173}. \\
+\texttt{mise run back:dev} & API en \texttt{localhost:8000}. \\
+\texttt{mise run docs:pdf} & Compila los \texttt{.tex} de \texttt{documentacion/}. \\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Con Docker o Podman}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Tarea & Qué hace \\
+\midrule
+\texttt{mise run docker:up} & Construye y levanta frontend (5173) y backend (8000) con recarga. \\
+\texttt{mise run docker:down} & Detiene y elimina los contenedores. \\
+\bottomrule
+\end{tabularx}
+
+\begin{itemize}
+  \item \texttt{frontend/Dockerfile} tiene tres etapas: \texttt{dev} (Vite), \texttt{build}
+        y \texttt{prod} (nginx sirviendo el sitio estático).
+  \item El backend monta \texttt{analisis/} en \texttt{/datos} en solo lectura; la ruta de la
+        base está en la variable \texttt{DUCKDB\_PATH}.
+  \item Los volúmenes llevan \texttt{:z} para funcionar con SELinux (Fedora).
+  \item \textbf{Docker Desktop en Windows:} sin mise basta con
+        \texttt{docker compose up --build} desde la raíz del repo. La recarga en caliente
+        usa sondeo (\texttt{WATCH\_POLLING} en Vite y \texttt{WATCHFILES\_\allowbreak FORCE\_\allowbreak POLLING} en
+        FastAPI), porque los cambios en carpetas de Windows no llegan al contenedor como
+        eventos. \texttt{.gitattributes} fuerza finales de línea LF al clonar.
+\end{itemize}
+
+\section{Frontend: siguiente paso}
+
+\subsection*{Simular la app con un CSV de VIIRS}
+Para no esperar a los productos finales del equipo de datos, el prototipo se alimenta de
+un \textbf{CSV de VIIRS S-NPP}. No es una aproximación arbitraria: VIIRS S-NPP \emph{es} la
+escala de referencia de la armonización (peso $= 1$), así que para 2012--2025 esos focos ya son
+los focos armonizados.
+
+\begin{enumerate}
+  \item Agregar los CSV de VIIRS S-NPP a rejilla (p.\,ej. $0{,}1^\circ$) por mes, con el
+        mismo filtro (\texttt{type = 0}, confianza \texttt{n}/\texttt{h}).
+  \item Guardar el resultado como archivo de ejemplo con el esquema del contrato de datos
+        (sección ``Contrato de datos'' del plan del frontend).
+  \item Construir el calendario, la frase de respuesta y la comparación con lo normal sobre
+        ese archivo.
+  \item Cuando llegue \texttt{focos\_armonizados}, cambiar el archivo y extender a 2000--2011,
+        sin tocar los componentes.
+\end{enumerate}
+
+Lo que \emph{no} se puede simular con VIIRS: los años 2000--2011 ni la banda de
+incertidumbre de MODIS. En el prototipo esas filas aparecen vacías o con datos sintéticos
+marcados como tales.
+
+\section{Decisiones abiertas}
+
+\begin{enumerate}
+  \item \abierta{¿El frontend obtiene los datos de la API FastAPI o de archivos estáticos
+        (Parquet + DuckDB-WASM)? El plan del frontend proponía no tener backend, pero ya existe
+        uno. Con la simulación esto se puede posponer.}
+  \item \abierta{Región de la demo final: India (datos que ya tenemos) o Argentina (CONAE).}
+  \item \abierta{``Normal'': mediana o promedio, de todo el periodo o de una ventana móvil.}
+  \item \abierta{Idioma de la interfaz: español, o español e inglés.}
+\end{enumerate}
+
+\end{document}

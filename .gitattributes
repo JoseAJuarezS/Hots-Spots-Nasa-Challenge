@@ -1,0 +1,5 @@
+# Finales de línea LF en el repo y en los contenedores, también al clonar en Windows
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+*.duckdb binary
