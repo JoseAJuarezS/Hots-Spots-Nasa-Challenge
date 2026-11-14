@@ -98,6 +98,6 @@ Contar celdas con fuego no mejoró el resultado. Comparar solo con Aqua, aunque 
 
 ## Próximos pasos
 
-1. Generar la serie mensual armonizada de 2000 a 2025 y comprobar en un gráfico que desaparece el salto de 2012.
+1. ~~Generar la serie mensual armonizada de 2000 a 2025.~~ Hecho: ver [`serie-armonizada.md`](serie-armonizada.md).
 2. Repetir el análisis con la región objetivo de la app.
 3. Decidir cómo mostrar la incertidumbre en el calendario, sobre todo en 2000–2002.
