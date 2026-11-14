@@ -38,7 +38,7 @@ dir = "frontend"
 run = "pnpm lint"
 
 [tasks."datos:cargar"]
-description = "Carga los CSV de '../data de prueba' en analisis/focos.duckdb"
+description = "Carga los CSV de datos_crudos/ en analisis/focos.duckdb"
 run = "duckdb -no-agent analisis/focos.duckdb < analisis/01_cargar.sql"
 
 [tasks."datos:correlacion"]
@@ -47,6 +47,10 @@ run = [
   "duckdb -no-agent analisis/focos.duckdb < analisis/02_correlacion.sql",
   "duckdb -no-agent analisis/focos.duckdb < analisis/03_k_mensual.sql",
 ]
+
+[tasks."datos:propuesta"]
+description = "Propuesta de armonización MODIS -> VIIRS con 2012 y 2018 (lee datos_crudos/, exporta a analisis/salida/)"
+run = "duckdb -no-agent analisis/propuesta.duckdb < analisis/05_propuesta_2012_2018.sql"
 
 [tasks."datos:armonizar"]
 description = "Serie mensual armonizada 2000-2025 (escala VIIRS S-NPP)"

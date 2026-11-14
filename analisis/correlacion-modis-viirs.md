@@ -2,7 +2,7 @@
 
 Análisis del periodo en que los dos sensores funcionan a la vez, para obtener una constante que "traduzca" los focos de MODIS a la escala de VIIRS.
 
-- **Datos:** CSV anuales de FIRMS para **India** (`../data de prueba/`).
+- **Datos:** CSV anuales de FIRMS para **India** (`datos_crudos/MODIS/` y `datos_crudos/VIIRS/`).
 - **Periodo de solape:** febrero de 2012 a diciembre de 2025, 167 meses con datos de MODIS y VIIRS S-NPP.
 - **Filtros comunes:**
   - solo vegetación (`type = 0`);

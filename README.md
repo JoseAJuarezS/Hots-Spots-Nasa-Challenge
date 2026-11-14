@@ -17,7 +17,7 @@ Para ello hay que resolver dos problemas:
 
 ## El problema, con nuestros datos
 
-Datos de prueba: CSV anuales de FIRMS para **India** en `../data de prueba/`. Incluyen MODIS (2000–2025), VIIRS S-NPP (2012–2025) y VIIRS NOAA-20, que aparece como `jpss1` (2018–2025).
+Datos de prueba: CSV anuales de FIRMS para **India** en `datos_crudos/MODIS/` y `datos_crudos/VIIRS/` (no se suben a git). Incluyen MODIS (2000–2025), VIIRS S-NPP (2012–2025) y VIIRS NOAA-20, que aparece como `jpss1` (2018–2025).
 
 Focos detectados por año:
 

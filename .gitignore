@@ -1,0 +1,12 @@
+# Base de datos local generada desde los CSV (pesa cientos de MB)
+analisis/*.duckdb
+analisis/*.duckdb.wal
+datos_crudos
+
+# Entorno virtual del backend
+backend/.venv/
+__pycache__/
+
+# Salidas exportadas por los análisis (se regeneran con mise)
+analisis/salida/*
+!analisis/salida/.gitkeep
