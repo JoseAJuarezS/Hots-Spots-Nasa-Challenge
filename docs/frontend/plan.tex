@@ -1,0 +1,198 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[spanish,es-noquoting]{babel}
+\usepackage{fontspec}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\setlist{nosep, leftmargin=*}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+\newcommand{\decision}[1]{\textcolor{teal}{\textbf{Decisión:}} #1}
+\newcommand{\abierta}[1]{\textcolor{orange!80!black}{\textbf{Abierta:}} #1}
+
+\title{Propuesta de frontend\\[0.3em]
+  \large Calendario armonizado de focos de calor MODIS--VIIRS}
+\author{Equipo Hots-Spots --- NASA Space Apps Challenge 2026}
+\date{14 de noviembre de 2026 \quad·\quad Borrador 0.1}
+
+\begin{document}
+\maketitle
+
+\section{Propósito de este documento}
+
+Plantear \emph{qué} va a hacer la aplicación web, \emph{para quién} y \emph{cómo} la
+vamos a construir, antes de escribir código. La armonización de los datos la lleva
+otra parte del equipo; este plan fija qué necesita el frontend de esos datos (sección
+\ref{sec:contrato}) para que los dos trabajos avancen en paralelo.
+
+\section{Objetivo}
+
+Que una persona no experta, en menos de un minuto, pueda responder:
+\begin{itemize}
+  \item ¿Este mes es peor de lo normal en mi zona?
+  \item ¿Cuál fue el peor año, y en qué meses se concentra la actividad?
+  \item ¿Cuántos focos hubo en esta área y periodo? (y descargarlos)
+\end{itemize}
+con una serie 2000--2025 en la que un foco significa lo mismo sin importar el satélite.
+
+\subsection*{Usuarios}
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Usuario & Qué necesita \\
+\midrule
+Gestores de emergencias y bomberos & Respuesta rápida: ¿está siendo un mes anómalo? \\
+Gestores del territorio & Comparar zonas y épocas; planificar temporadas \\
+Científicos & Series consistentes, incertidumbre explícita, descarga en CSV \\
+\bottomrule
+\end{tabularx}
+
+\section{Principios de diseño}
+
+\begin{enumerate}
+  \item \textbf{Una pregunta, una pantalla.} Una sola vista principal; nada de menús
+        profundos ni pestañas anidadas.
+  \item \textbf{El dato es el protagonista.} Fondo neutro, tipografía sobria, un único
+        color de acento. El color se reserva para codificar cantidad de focos.
+  \item \textbf{Rampa de color accesible.} Secuencial, perceptualmente uniforme y apta
+        para daltonismo (familia \emph{viridis}/\emph{inferno} o ColorBrewer \emph{YlOrRd}).
+        Para anomalías, una rampa divergente con el centro en ``normal''.
+  \item \textbf{Honestidad con la incertidumbre.} Los años 2000--2002 (solo Terra) y
+        los meses con pocos focos se marcan como menos precisos, sin esconderlos.
+  \item \textbf{Instantáneo.} Datos precalculados; nada de consultas a FIRMS en vivo.
+  \item \textbf{Responsive y legible en móvil}, porque parte del público está en campo.
+\end{enumerate}
+
+\section{Funcionalidades del MVP}
+
+\begin{tabularx}{\linewidth}{@{}clX@{}}
+\toprule
+\# & Funcionalidad & Detalle \\
+\midrule
+F1 & Selección de área & Dibujar un rectángulo/polígono en el mapa, o introducir
+     latitud/longitud y radio. Opción de ``región completa''. \\
+F2 & Selección de periodo & Rango de años y/o meses; atajo para un día concreto. \\
+F3 & Calendario años $\times$ meses & Matriz de 26 filas (2000--2025) por 12 columnas,
+     cada celda coloreada por focos armonizados. Es la vista central. \\
+F4 & Comparación con lo normal & Para el periodo elegido: mediana histórica, anomalía
+     (\% sobre la mediana) y posición en el ranking. Alternar calendario en
+     \emph{valores absolutos} o \emph{anomalía}. \\
+F5 & Rankings & Los 5 meses y los 5 años con más actividad del área. \\
+F6 & Detalle al pasar/tocar & Celda $\to$ focos armonizados, focos brutos, sensor de
+     origen, banda de incertidumbre. \\
+F7 & Descarga & CSV con los focos de la búsqueda (con su peso) y CSV/PNG del calendario. \\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Fuera del MVP}
+Cobertura global, datos NRT en tiempo real, predicción, cuentas de usuario.
+
+\section{Bocetos de la interfaz}
+
+Se harán en una fase posterior (sección \ref{sec:fases}). Estructura prevista de
+la pantalla única, de arriba abajo:
+
+\begin{enumerate}
+  \item \textbf{Barra superior mínima:} nombre, selector de región, botón de ayuda.
+  \item \textbf{Panel de consulta:} mapa pequeño con la herramienta de dibujo y el
+        selector de periodo. En escritorio, a la izquierda; en móvil, plegable arriba.
+  \item \textbf{Respuesta en una frase:} p.\,ej. ``Agosto de 2025: 38\,\% por encima
+        de lo normal --- el 3.\textsuperscript{er} agosto más activo desde 2000''.
+  \item \textbf{Calendario} años $\times$ meses con su leyenda.
+  \item \textbf{Rankings y descarga}, discretos, al final.
+\end{enumerate}
+
+\section{Contrato de datos}\label{sec:contrato}
+
+Lo que el frontend espera de la armonización. Es la pieza que hay que acordar primero
+con el equipo de datos.
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Producto & Contenido \\
+\midrule
+\texttt{celdas\_mes.parquet} & Agregado por celda de rejilla (p.\,ej. $0{,}1^\circ$) y mes:
+  \texttt{lat}, \texttt{lon}, \texttt{mes}, \texttt{focos\_armonizados}
+  (=\,$\sum$\texttt{peso}), \texttt{focos\_brutos}, \texttt{fuente}
+  (\texttt{TERRA}/\texttt{MODIS}/\texttt{VIIRS}). Alimenta el calendario de cualquier área. \\
+\texttt{k\_mes.json} & Constantes por mes del año y su rango intercuartil, para la banda
+  de incertidumbre. \\
+\texttt{focos/*.parquet} & Focos individuales con su \texttt{peso}, particionados por año,
+  solo para la descarga en CSV. \\
+\texttt{metadatos.json} & Región, periodo cubierto, filtros aplicados, versión del método. \\
+\bottomrule
+\end{tabularx}
+
+\abierta{tamaño de celda de la rejilla ($0{,}1^\circ$ frente a $0{,}25^\circ$): equilibrio
+entre precisión del área dibujada y peso de los archivos.}
+
+\section{Arquitectura técnica}
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Pieza & Propuesta \\
+\midrule
+Base & React 19 + TypeScript + Vite + Tailwind 4 (ya en el repo). \\
+Mapa & MapLibre GL JS con un mapa base claro y sobrio, más una herramienta de dibujo. \\
+Consultas & DuckDB-WASM leyendo los Parquet en el navegador: filtra por área y periodo
+  en milisegundos, sin servidor de base de datos. \\
+Gráficos & SVG propio para el calendario (es una cuadrícula simple); evaluar
+  Observable Plot si hace falta más. \\
+Despliegue & Sitio estático (GitHub Pages o similar) con los Parquet como archivos. \\
+\bottomrule
+\end{tabularx}
+
+\decision{sin backend en el MVP. Todo es estático, lo que cumple ``respuesta instantánea''
+y simplifica el despliegue.}
+
+\abierta{si el volumen de focos individuales es demasiado para el navegador, la descarga
+de CSV pasaría a una pequeña función en servidor.}
+
+\section{Fases}\label{sec:fases}
+
+\begin{tabularx}{\linewidth}{@{}clX@{}}
+\toprule
+Fase & Nombre & Entregable en \texttt{docs/frontend/} \\
+\midrule
+0 & Plan & Este documento. \\
+1 & Contrato de datos & Esquema acordado con el equipo de datos y un conjunto de
+  datos de ejemplo (puede ser sintético) para no bloquearnos. \\
+2 & Bocetos & Wireframes de escritorio y móvil, y la guía visual: paleta, tipografía,
+  rampa de color y espaciado. \\
+3 & Prototipo & Calendario y selector de periodo funcionando con los datos de ejemplo. \\
+4 & Mapa y área & Dibujo de áreas y consulta con DuckDB-WASM. \\
+5 & Comparación y descarga & Anomalías, rankings, CSV y PNG. \\
+6 & Pulido & Accesibilidad (contraste, teclado, lectores de pantalla), rendimiento,
+  textos de ayuda y prueba con usuarios no expertos (la prueba del minuto). \\
+\bottomrule
+\end{tabularx}
+
+\section{Criterios de aceptación}
+
+\begin{itemize}
+  \item Un usuario nuevo responde ``¿este mes es peor de lo normal?'' en menos de un minuto.
+  \item Cualquier consulta de área y periodo responde en menos de 1\,s.
+  \item El calendario no muestra salto en 2012 y marca 2000--2002 como menos precisos.
+  \item La rampa de color se distingue con los tres tipos comunes de daltonismo.
+  \item El CSV descargado coincide con lo que muestra el calendario.
+\end{itemize}
+
+\section{Preguntas abiertas}
+
+\begin{enumerate}
+  \item ¿``Normal'' es la mediana o el promedio? ¿De todo 2000--2025 o de una ventana
+        móvil, por ejemplo los 10 años anteriores?
+  \item ¿Qué región muestra la demo final: India (los datos que ya tenemos) o la región
+        de la CONAE (Argentina)?
+  \item ¿Idioma de la interfaz: solo español, o español e inglés para el jurado?
+  \item ¿Mostrar el número absoluto de focos armonizados, o un índice relativo para no
+        dar una falsa sensación de precisión?
+\end{enumerate}
+
+\end{document}
