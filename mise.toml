@@ -1,0 +1,34 @@
+[tools]
+node = "26.13.1"
+pnpm = "12.18.0"
+
+[env]
+_.path = ["frontend/node_modules/.bin"]
+
+[tasks."front:install"]
+description = "Instala las dependencias del frontend"
+dir = "frontend"
+run = "pnpm install"
+
+[tasks."front:dev"]
+description = "Servidor de desarrollo del frontend (Vite)"
+dir = "frontend"
+depends = ["front:install"]
+run = "pnpm dev"
+
+[tasks."front:build"]
+description = "Compila el frontend para producción"
+dir = "frontend"
+depends = ["front:install"]
+run = "pnpm build"
+
+[tasks."front:preview"]
+description = "Sirve la build de producción en local"
+dir = "frontend"
+depends = ["front:build"]
+run = "pnpm preview"
+
+[tasks."front:lint"]
+description = "Revisa el código del frontend con oxlint"
+dir = "frontend"
+run = "pnpm lint"
