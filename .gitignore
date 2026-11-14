@@ -1,4 +1,7 @@
 # Base de datos local generada desde los CSV (pesa cientos de MB)
 analisis/*.duckdb
 analisis/*.duckdb.wal
-datos_crudos
+
+# Entorno virtual del backend
+backend/.venv/
+__pycache__/

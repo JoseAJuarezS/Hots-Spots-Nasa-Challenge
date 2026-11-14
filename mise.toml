@@ -2,6 +2,9 @@
 duckdb = "latest"
 node = "26.13.1"
 pnpm = "12.18.0"
+python = "3.15.2"
+"github:tectonic-typesetting/tectonic" = "0.17.0"
+uv = "0.13.8"
 
 [env]
 _.path = ["frontend/node_modules/.bin"]
@@ -44,3 +47,23 @@ run = [
   "duckdb -no-agent analisis/focos.duckdb < analisis/02_correlacion.sql",
   "duckdb -no-agent analisis/focos.duckdb < analisis/03_k_mensual.sql",
 ]
+
+[tasks."datos:armonizar"]
+description = "Serie mensual armonizada 2000-2025 (escala VIIRS S-NPP)"
+run = "duckdb -no-agent analisis/focos.duckdb < analisis/04_armonizar.sql"
+
+[tasks."docs:pdf"]
+description = "Compila los .tex de docs/frontend a PDF con Tectonic"
+dir = "docs/frontend"
+run = "tectonic -X compile plan.tex"
+
+[tasks."back:install"]
+description = "Instala las dependencias del backend (uv)"
+dir = "backend"
+run = "uv sync"
+
+[tasks."back:dev"]
+description = "Servidor de desarrollo de la API (FastAPI, recarga automática)"
+dir = "backend"
+depends = ["back:install"]
+run = "uv run fastapi dev app/main.py"
