@@ -17,17 +17,6 @@ Test data: CSV by year in India from FIRMS  in `../datos_crudos/`. This includes
 
 **VIIRS detects between 6 and 8 times more hot spots than MODIS.** For example, if MODIS is used between 2000–2011 and VIIRS from 2012, the map will show 7 times more possible fires that may not exist due to the change in satellite. VIIRS brings a more accurate data since tha radius is smaller and can register smaller wildfires. 
 
-### Diferencias que hay que resolver
-
-| | MODIS | VIIRS 375 m |
-|---|---|---|
-| Píxel | ~1 km | ~375 m |
-| Sensibilidad | Fuegos grandes o calientes | También fuegos pequeños |
-| Satélites | Terra (desde nov 2000) y Aqua (desde jul 2002) | S-NPP (2012), NOAA-20 (2018), NOAA-21 (2023) |
-| `confidence` | Numérica, 0–100 | Categórica: `l` / `n` / `h` |
-| Brillo | `brightness`, `bright_t31` | `bright_ti4`, `bright_ti5` |
-| `satellite` | `Terra`, `Aqua` | `N` (S-NPP), `N20` (NOAA-20) |
-
 ## Resources
 
 - NASA FIRMS: https://www.earthdata.nasa.gov/data/tools/firms
