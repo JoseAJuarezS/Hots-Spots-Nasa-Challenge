@@ -1,0 +1,18 @@
+[project]
+name = "modelo"
+version = "0.1.0"
+description = "Red neuronal para predecir actividad de incendios (entrena con MODIS, valida con VIIRS)"
+requires-python = ">=3.12,<3.15"
+dependencies = [
+    "duckdb>=1.1",
+    "numpy>=2.0",
+    "torch>=2.5",
+]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu", marker = "sys_platform == 'win32' or sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
