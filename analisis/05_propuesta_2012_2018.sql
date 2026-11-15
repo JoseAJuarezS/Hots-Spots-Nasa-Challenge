@@ -10,21 +10,21 @@ CREATE OR REPLACE TABLE focos_prop AS
 SELECT 'MODIS' AS sensor, satellite, CAST(acq_date AS DATE) AS fecha, acq_time,
        latitude, longitude, confidence, version, frp, daynight, type,
        regexp_extract(filename, '[^/\\]+$') AS archivo
-FROM read_csv(['datos_crudos/MODIS/modis_2012_India.csv', 'datos_crudos/MODIS/modis_2018_India.csv'],
+FROM read_csv([getenv('FIRMS_DATA_DIR') || '/crudos/modis/modis_2012_India.csv', getenv('FIRMS_DATA_DIR') || '/crudos/modis/modis_2018_India.csv'],
               union_by_name = true, filename = true,
               types = {'acq_time': 'VARCHAR', 'confidence': 'VARCHAR', 'version': 'VARCHAR'})
 UNION ALL
 SELECT 'VIIRS_SNPP', satellite, CAST(acq_date AS DATE), acq_time,
        latitude, longitude, confidence, version, frp, daynight, type,
        regexp_extract(filename, '[^/\\]+$')
-FROM read_csv(['datos_crudos/VIIRS/viirs-snpp_2012_India.csv', 'datos_crudos/VIIRS/viirs-snpp_2018_India.csv'],
+FROM read_csv([getenv('FIRMS_DATA_DIR') || '/crudos/viirs-snpp/viirs-snpp_2012_India.csv', getenv('FIRMS_DATA_DIR') || '/crudos/viirs-snpp/viirs-snpp_2018_India.csv'],
               union_by_name = true, filename = true,
               types = {'acq_time': 'VARCHAR', 'confidence': 'VARCHAR', 'version': 'VARCHAR'})
 UNION ALL
 SELECT 'VIIRS_NOAA20', satellite, CAST(acq_date AS DATE), acq_time,
        latitude, longitude, confidence, version, frp, daynight, type,
        regexp_extract(filename, '[^/\\]+$')
-FROM read_csv('datos_crudos/VIIRS/viirs-jpss1_2018_India.csv', filename = true,
+FROM read_csv(getenv('FIRMS_DATA_DIR') || '/crudos/viirs-jpss1/viirs-jpss1_2018_India.csv', filename = true,
               types = {'acq_time': 'VARCHAR', 'confidence': 'VARCHAR', 'version': 'VARCHAR'});
 
 .print '== 1. Filas cargadas por archivo =='

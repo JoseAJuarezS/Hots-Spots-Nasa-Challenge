@@ -31,7 +31,7 @@ mise install               # DuckDB
 mise run datos:propuesta   # analisis/05_propuesta_2012_2018.sql -> analisis/propuesta.duckdb
 ```
 
-Lee los CSV directamente de `datos_crudos/` y exporta a `analisis/salida/` (carpeta ignorada por git).
+Lee los CSV de India directamente de `$FIRMS_DATA_DIR/crudos/` y exporta a `analisis/salida/` (carpeta ignorada por git).
 
 ## Punto de partida: k cambia entre años
 

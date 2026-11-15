@@ -1,0 +1,8 @@
+# Países que entran en el análisis, uno por línea, con el nombre exacto de FIRMS
+# (el de las URL: .../<sensor>_<anio>_<Pais>.csv). Se puede sobrescribir con
+# FIRMS_PAISES=India,Canada para una prueba puntual.
+India           # quemas agrícolas, monzón (la base de la rama daniel)
+United_States   # templado: incendios forestales y agrícolas
+Canada          # boreal: pocos incendios muy grandes, latitud alta, temporada corta
+Brazil          # hemisferio sur, trópico: Amazonía y Cerrado, muchísimos focos
+Argentina       # hemisferio sur, pastizal y Patagonia; país de la CONAE, que propone el reto

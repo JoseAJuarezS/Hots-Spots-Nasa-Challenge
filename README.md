@@ -17,7 +17,7 @@ Para ello hay que resolver dos problemas:
 
 ## El problema, con nuestros datos
 
-Datos de prueba: CSV anuales de FIRMS para **India** en `datos_crudos/MODIS/` y `datos_crudos/VIIRS/` (no se suben a git). Incluyen MODIS (2000–2025), VIIRS S-NPP (2012–2025) y VIIRS NOAA-20, que aparece como `jpss1` (2018–2025).
+Datos de prueba: CSV anuales por país de FIRMS (ver [Datos](#datos), no se suben a git). Incluyen MODIS (2000–2025), VIIRS S-NPP (2012–2025) y VIIRS NOAA-20, que aparece como `jpss1` (2018–2025). Las cifras de esta sección son de **India**.
 
 Focos detectados por año:
 
@@ -51,6 +51,28 @@ Otros detalles que se ven en los datos:
 - **Años incompletos:** 2000 solo tiene noviembre y diciembre (1 407 focos), y 2002 incluye a Aqua solo desde julio.
 - **Tipo de foco:** el campo `type` vale 0 para vegetación, 2 para otras fuentes estáticas y 3 para costa afuera. Para el calendario de quemas conviene quedarse con `type = 0`.
 - **Versión de MODIS:** pasa de 6.2 a 6.03 en 2018. Hay que revisar si esto afecta a la consistencia de los datos.
+
+## Datos
+
+Los datos de FIRMS **no van en git**. Viven en `$FIRMS_DATA_DIR`, por defecto `../datos_firms` (junto a la carpeta del repo):
+
+```
+datos_firms/
+├── crudos/<sensor>/<sensor>_<año>_<País>.csv            tal cual los da FIRMS
+└── parquet/sensor=<sensor>/pais=<País>/anio=<año>/      lo que leen los análisis (~5× más chico)
+```
+
+`<sensor>` es `modis`, `viirs-snpp` o `viirs-jpss1`, y `<País>` el nombre de FIRMS (`India`, `United_States`, `Brazil`...). Los países del análisis están en [`analisis/paises.txt`](analisis/paises.txt).
+
+```bash
+mise run datos:tamano      # cuánto falta por descargar
+mise run datos:descargar   # descarga lo que falte (se puede cortar y reanudar)
+mise run datos:ingerir     # CSV -> Parquet, solo lo que cambió
+mise run datos:estado      # qué hay por país y sensor
+mise run datos:cargar      # Parquet -> analisis/focos.duckdb (tabla `focos`, con columna `pais`)
+```
+
+**Agregar un país:** añadirlo a `paises.txt` y volver a correr `descargar`, `ingerir` y `cargar`; el SQL no cambia. Para una prueba puntual: `FIRMS_PAISES=India,Canada mise run datos:cargar`. Para guardar los datos en otro disco, define `FIRMS_DATA_DIR` en un `mise.local.toml` (no se sube).
 
 ## Criterios de éxito
 

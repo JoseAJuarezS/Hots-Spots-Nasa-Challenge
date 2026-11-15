@@ -11,7 +11,7 @@ mise run datos:cargar       # si aún no existe analisis/focos.duckdb
 mise run datos:armonizar    # ejecuta 04_armonizar.sql
 ```
 
-Los CSV se pueden descargar de `https://firms.modaps.eosdis.nasa.gov/data/country/<sensor>/<año>/<sensor>_<año>_India.csv` (sensor: `modis`, `viirs-snpp`, `viirs-jpss1`). Se guardan en `datos_crudos/MODIS/` (los de MODIS) y en `datos_crudos/VIIRS/` (los de VIIRS).
+Los datos se descargan e ingieren con `mise run datos:descargar` y `mise run datos:ingerir` (ver la sección *Datos* del README). Las cifras de este documento son de **India** (`FIRMS_PAISES=India`).
 
 `04_armonizar.sql` crea cuatro tablas en `focos.duckdb`:
 
@@ -119,7 +119,7 @@ En la comparación, el método de `Develop` por sí solo no corrige el número d
 - **Referencia:** se calibra con S-NPP, que es la escala de referencia, no con S-NPP + NOAA-20.
 - **Tramo de calibración:** el mismo que el de las k (2012-02 a 2018-12). Así, 2019–2025 sirve de prueba.
 - **Umbrales candidatos de 0 a 101.** El valor 101 significa «ningún foco es `h`». En `Develop`, de noche, todos los MODIS con confianza 100 quedaban como `h` (6,1 %), cuando en VIIRS son el 0,1 %. Ahora quedan como `n`.
-- **No se usa `05_confidence_modis_a_viirs.py`**, porque sobrescribe los CSV de `datos_crudos/MODIS/` y deja `confidence` en letras. Si se ejecuta, este pipeline descarta todos los focos MODIS, porque el filtro `>= 30` no encuentra números.
+- **No se usa `05_confidence_modis_a_viirs.py`**, porque sobrescribía los CSV de MODIS y deja `confidence` en letras. Si se ejecuta, este pipeline descarta todos los focos MODIS, porque el filtro `>= 30` no encuentra números.
 
 **confidence** (MODIS 0–100 → `l`/`n`/`h`):
 

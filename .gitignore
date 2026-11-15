@@ -1,7 +1,13 @@
 # Base de datos local generada desde los CSV (pesa cientos de MB)
 analisis/*.duckdb
 analisis/*.duckdb.wal
-datos_crudos
+# Los datos de FIRMS viven fuera del repo, en $FIRMS_DATA_DIR (ver mise.toml)
+datos_crudos/
+datos_firms/
+*.csv.part
+
+# Configuración local de mise (p. ej. otra FIRMS_DATA_DIR)
+mise.local.toml
 
 # Entorno virtual del backend
 backend/.venv/
