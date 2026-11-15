@@ -1,0 +1,14 @@
+[
+	{"mes":1,"k_modis":5.304,"k_modis_p25":5.191,"k_modis_p75":5.3289,"k_terra":16.0354},
+	{"mes":2,"k_modis":5.8786,"k_modis_p25":5.4873,"k_modis_p75":5.7389,"k_terra":19.9509},
+	{"mes":3,"k_modis":5.6289,"k_modis_p25":5.1884,"k_modis_p75":6.1201,"k_terra":23.3247},
+	{"mes":4,"k_modis":6.1527,"k_modis_p25":5.7217,"k_modis_p75":6.5704,"k_terra":16.0486},
+	{"mes":5,"k_modis":5.9374,"k_modis_p25":5.5941,"k_modis_p75":6.3537,"k_terra":11.653},
+	{"mes":6,"k_modis":8.7095,"k_modis_p25":8.8829,"k_modis_p75":9.5064,"k_terra":17.1481},
+	{"mes":7,"k_modis":6.3066,"k_modis_p25":5.5427,"k_modis_p75":7.4126,"k_terra":12.3106},
+	{"mes":8,"k_modis":3.8332,"k_modis_p25":3.2481,"k_modis_p75":4.2496,"k_terra":7.0551},
+	{"mes":9,"k_modis":5.3636,"k_modis_p25":4.5632,"k_modis_p75":6.9034,"k_terra":10.8291},
+	{"mes":10,"k_modis":4.405,"k_modis_p25":4.3339,"k_modis_p75":4.5219,"k_terra":37.037},
+	{"mes":11,"k_modis":5.4857,"k_modis_p25":5.0838,"k_modis_p75":6.0018,"k_terra":48.6012},
+	{"mes":12,"k_modis":5.6898,"k_modis_p25":5.4807,"k_modis_p75":5.8045,"k_terra":17.4983}
+]
