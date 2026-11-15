@@ -1,12 +1,11 @@
 # Base de datos local generada desde los CSV (pesa cientos de MB)
 analisis/*.duckdb
 analisis/*.duckdb.wal
-<<<<<<< HEAD
+
+# CSV de FIRMS descargados y MODIS armonizado (se regeneran con los scripts)
 datos_crudos
-||||||| a7d2483
-=======
+datos_armonizados/
 
 # Entorno virtual del backend
 backend/.venv/
 __pycache__/
->>>>>>> main
