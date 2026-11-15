@@ -1,12 +1,12 @@
-# Base de datos local generada desde los CSV (pesa cientos de MB)
+﻿datos_crudos/
+datos_procesados/
 analisis/*.duckdb
 analisis/*.duckdb.wal
-<<<<<<< HEAD
-datos_crudos
-||||||| a7d2483
-=======
 
-# Entorno virtual del backend
 backend/.venv/
+frontend/node_modules/
+frontend/dist/
 __pycache__/
->>>>>>> main
+
+# Artefactos generados para el frontend
+frontend/public/data/

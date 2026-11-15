@@ -67,3 +67,7 @@ description = "Servidor de desarrollo de la API (FastAPI, recarga automática)"
 dir = "backend"
 depends = ["back:install"]
 run = "uv run fastapi dev app/main.py"
+
+[tasks."datos:exportar"]
+description = "Exporta celdas_mes.parquet, k_mes.json, focos/*.parquet y metadatos.json"
+run = "duckdb -no-agent analisis/focos.duckdb < analisis/06_exportar_contrato.sql"
