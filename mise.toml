@@ -68,12 +68,6 @@ dir = "backend"
 depends = ["back:install"]
 run = "uv run fastapi dev app/main.py"
 
-[tasks."modelo:datos"]
-description = "Construye la rejilla celda × mes (MODIS armonizado y VIIRS) para la red"
-dir = "modelo"
-run = "uv run python datos.py"
-
-[tasks."modelo:entrenar"]
-description = "Entrena la red con MODIS 2000-2017 y la valida con VIIRS 2018+"
-dir = "modelo"
-run = "uv run python entrenar.py"
+[tasks."datos:exportar"]
+description = "Exporta celdas_mes.parquet, k_mes.json, focos/*.parquet y metadatos.json"
+run = "duckdb -no-agent analisis/focos.duckdb < analisis/06_exportar_contrato.sql"
