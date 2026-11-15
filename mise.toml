@@ -52,6 +52,26 @@ run = [
 description = "Serie mensual armonizada 2000-2025 (escala VIIRS S-NPP)"
 run = "duckdb -no-agent analisis/focos.duckdb < analisis/04_armonizar.sql"
 
+[tasks."armonizacion:reglas"]
+description = "Compara MODIS y VIIRS crudos en 2012-2017 y obtiene las reglas (analisis/reglas/)"
+run = "duckdb -no-agent < analisis/06_reglas_armonizacion.sql"
+
+[tasks."armonizacion:aplicar"]
+description = "Armoniza todo MODIS 2000-2025 con las reglas (datos_armonizados/)"
+run = "duckdb -no-agent < analisis/07_armonizar_modis.sql"
+
+[tasks."armonizacion:validar"]
+description = "Compara MODIS armonizado con VIIRS 2018+ y mide el error (analisis/validacion/)"
+run = "duckdb -no-agent < analisis/08_validar_armonizacion.sql"
+
+[tasks."armonizacion:todo"]
+description = "Reglas -> armonizar -> validar"
+run = [
+  "duckdb -no-agent < analisis/06_reglas_armonizacion.sql",
+  "duckdb -no-agent < analisis/07_armonizar_modis.sql",
+  "duckdb -no-agent < analisis/08_validar_armonizacion.sql",
+]
+
 [tasks."docs:pdf"]
 description = "Compila los .tex de docs/frontend a PDF con Tectonic"
 dir = "docs/frontend"

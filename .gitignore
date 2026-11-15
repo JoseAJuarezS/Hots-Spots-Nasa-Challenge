@@ -1,7 +1,11 @@
-﻿datos_crudos/
+# Datos crudos de FIRMS (pesados, se descargan/regeneran con los scripts): NO se suben
+datos_crudos/
 datos_procesados/
 analisis/*.duckdb
 analisis/*.duckdb.wal
+
+# MODIS armonizado: SI se sube, solo en Parquet (el CSV es el mismo contenido y pesa ~5x)
+datos_armonizados/**/*.csv
 
 backend/.venv/
 frontend/node_modules/
